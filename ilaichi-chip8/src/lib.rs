@@ -29,7 +29,7 @@ pub const SCREEN_HEIGHT: usize = 32;
 
 const START_ADDR: u16 = 0x200;
 
-struct Emulator {
+pub struct Emulator {
     pc: u16,
     ram: [u8;  RAM_SIZE],
     screen: [bool; SCREEN_WIDTH * SCREEN_HEIGHT],
