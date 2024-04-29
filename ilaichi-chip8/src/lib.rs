@@ -1,3 +1,5 @@
+use rand::random;
+
 const FONTSET_SIZE: usize = 80;
 const FONTSET: [u8; FONTSET_SIZE] = [
 0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -274,6 +276,14 @@ fn execute(&mut self, opcode: u16) {
                 let nnn = opcode & 0xFFF;
                 self.pc = nnn + (self.v_registers[0] as u16);
         },
+        (0xC,_,_,_) => {
+                let x = digit2 as usize;
+                let kk = (opcode & 0xFF) as u8;
+                let rand: u8 = random();
+
+                self.v_registers[x] = rand & kk; 
+        },
+
 
         (_, _, _, _) => unimplemented!("Unimplemented opcode: {}", opcode),
     }
