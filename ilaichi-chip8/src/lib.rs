@@ -216,12 +216,64 @@ fn execute(&mut self, opcode: u16) {
                 let x = digit2 as usize;
                 let y = digit3 as usize; 
 
-                self.v_registers[x] = self.v_registers[x] + self.v_registers[y];
-                // TODO: carry if greater than register capacity 
-        }, 
+                let (vx_new,carry) = self.v_registers[x].overflowing_add(self.v_registers[y]);
+                let vf_new = if carry {1} else {0}; 
+                
+                self.v_registers[x] = vx_new;
+                self.v_registers[0xF] = vf_new;
+        },
+        (8,_,_,5) => { 
+                let x = digit2 as usize;
+                let y = digit3 as usize; 
 
+                let(vx_new,borrow) = self.v_registers[x].overflowing_sub(self.v_registers[y]);
+                let vf_new = if !borrow {1} else {0};
 
+                self.v_registers[x] = vx_new;
+                self.v_registers[0xF] = vf_new;
+                
+        },
+        (8,_,_,6) => { 
+                let x = digit2 as usize;
+                let lsb = self.v_registers[x] & 1;
 
+                self.v_registers[x] >>= 1;
+                self.v_registers[0xF] = lsb;
+        },
+        (8,_,_,7) => { 
+                let x = digit2 as usize;
+                let y = digit3 as usize; 
+
+                let(vx_new,borrow) = self.v_registers[y].overflowing_sub(self.v_registers[x]);
+                let vf_new = if !borrow {1} else {0};
+
+                self.v_registers[x] = vx_new;
+                self.v_registers[0xF] = vf_new;
+                
+        },
+        (8,_,_,0xE) => { 
+                let x = digit2 as usize;
+                let msb = (self.v_registers[x] >> 7) & 1;
+                
+                self.v_registers[x] <<= 1;
+                self.v_registers[0xF] = msb;
+        },
+        (9,_,_,0) => {
+                let x = digit2 as usize;
+                let y = digit3 as usize;
+
+                if self.v_registers[x] != self.v_registers[y] {
+                    self.pc += 2;
+                }
+        },
+        (0xA,_,_,_) => {
+                let nnn = opcode & 0xFFF;
+                self.i_register = nnn;
+        },
+        (0xB,_,_,_) => {
+                let nnn = opcode & 0xFFF;
+                self.pc = nnn + (self.v_registers[0] as u16);
+        },
 
         (_, _, _, _) => unimplemented!("Unimplemented opcode: {}", opcode),
     }
