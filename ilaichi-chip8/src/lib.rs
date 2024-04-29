@@ -30,7 +30,8 @@ pub const SCREEN_HEIGHT: usize = 32;
 const START_ADDR: u16 = 0x200;
 
 pub struct Emulator {
-    pc: u16,
+    pub pc: u16,
+
     ram: [u8;  RAM_SIZE],
     screen: [bool; SCREEN_WIDTH * SCREEN_HEIGHT],
 
@@ -84,7 +85,6 @@ pub fn reset(&mut self) {
             self.sound_timer = 0;
 
             self.keys = [false; NUM_KEYS];
- 
 }
 
 fn push(&mut self, val: u16) {
@@ -152,6 +152,76 @@ fn execute(&mut self, opcode: u16) {
                 self.push(self.pc);
                 self.pc = nnn;
         },
+        (3,_,_,_) => {
+                let x = digit2 as usize;
+                let nn = (opcode & 0xFF) as u8;
+
+                if self.v_registers[x] == nn {
+                    self.pc += 2;
+                }
+        },
+        (4,_,_,_) => {
+                let x = digit2 as usize;
+                let nn = (opcode & 0xFF) as u8;
+
+                if self.v_registers[x] != nn {
+                    self.pc += 2;
+                }
+        },
+        (5,_,_,0) => {
+                let x = digit2 as usize;
+                let y = digit3 as usize;
+
+                if self.v_registers[x] == self.v_registers[y] {
+                    self.pc += 2;
+                }
+        },
+        (6,_,_,_) => {
+                let x = digit2 as usize;
+                let kk = (opcode & 0xFF) as u8;
+
+                self.v_registers[x] = kk;
+        },
+        (7,_,_,_) => {
+                let x = digit2 as usize;
+                let kk = (opcode & 0xFF) as u8;
+
+                self.v_registers[x] = self.v_registers[x] + kk;
+        },
+        (8,_,_,0) => {
+                let x = digit2 as usize;
+                let y = digit3 as usize; 
+
+                self.v_registers[x] = self.v_registers[y];
+        },
+        (8,_,_,1) => {
+                let x = digit2 as usize;
+                let y = digit3 as usize; 
+
+                self.v_registers[x] = self.v_registers[x] | self.v_registers[y];
+        },
+        (8,_,_,2) => { 
+                let x = digit2 as usize;
+                let y = digit3 as usize; 
+
+                self.v_registers[x] = self.v_registers[x] & self.v_registers[y];
+        },
+        (8,_,_,3) => { 
+                let x = digit2 as usize;
+                let y = digit3 as usize; 
+
+                self.v_registers[x] = self.v_registers[x] ^ self.v_registers[y];
+        },
+        (8,_,_,4) => { 
+                let x = digit2 as usize;
+                let y = digit3 as usize; 
+
+                self.v_registers[x] = self.v_registers[x] + self.v_registers[y];
+                // TODO: carry if greater than register capacity 
+        }, 
+
+
+
 
         (_, _, _, _) => unimplemented!("Unimplemented opcode: {}", opcode),
     }
