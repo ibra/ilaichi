@@ -279,9 +279,50 @@ fn execute(&mut self, opcode: u16) {
         (0xC,_,_,_) => {
                 let x = digit2 as usize;
                 let kk = (opcode & 0xFF) as u8;
-                let rand: u8 = random();
+                let rnd: u8 = random();
 
-                self.v_registers[x] = rand & kk; 
+                self.v_registers[x] = rnd & kk; 
+        },
+        (0xD,_,_,_) => {
+                //TODO: implement drawing sprites
+                let x_c = self.v_registers[digit2 as usize];
+                let y_c = self.v_registers[digit3 as usize];
+
+                let n = digit4 as usize;
+        },
+        (0xE,_,9,0xE) => {
+                let x = digit2 as usize;
+                let v_x = self.v_registers[x];
+                let key_pressed = self.keys[v_x as usize];               
+
+                if key_pressed {
+                        self.pc += 2
+                }
+        },
+        (0xE,_,0xA,1) => {
+                let x = digit2 as usize;
+                let v_x = self.v_registers[x];
+                let key_pressed = self.keys[v_x as usize];               
+
+                if !key_pressed {
+                        self.pc += 2
+                }
+        },
+        (0xF,_,0,7) => {
+                let x = digit2 as usize;
+                self.v_registers[x] = self.delay_timer;
+        },
+        (0xF,_,0,0xA) => {
+                let x = digit2 as usize;
+                // TODO: implement waiting for keypress
+        }, 
+        (0xF,_,1,5) => {
+                let x = digit2 as usize;
+                self.delay_timer = self.v_registers[x];
+        }, 
+        (0xF,_,1,8) => {
+                let x = digit2 as usize;
+                self.sound_timer = self.v_registers[x];
         },
 
 
