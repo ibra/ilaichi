@@ -324,6 +324,26 @@ fn execute(&mut self, opcode: u16) {
                 let x = digit2 as usize;
                 self.sound_timer = self.v_registers[x];
         },
+        (0xF,_,1,0xE) => {
+                let x = digit2 as usize;
+                let v_x = self.v_registers[x];
+                self.i_register = self.i_register.wrapping_add(v_x as u16);
+        },
+        (0xF,_,2,9) => {
+                let x = digit2 as usize;
+                self.i_register = (self.v_registers[x] as u16) * 5;
+        },
+        (0xF,_,3,3) => {
+                let x = digit2 as usize;
+                let v_x = self.v_registers[x] as f32;
+
+                self.ram[self.i_register as usize] = (v_x / 100.0).floor() as u8;
+                self.ram[(self.i_register+1) as usize] = ((v_x / 10.0) % 10.0).floor() as u8;
+                self.ram[(self.i_register+2) as usize] = (v_x % 10.0) as u8; 
+        },
+
+
+
 
 
         (_, _, _, _) => unimplemented!("Unimplemented opcode: {}", opcode),
