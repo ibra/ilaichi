@@ -320,6 +320,7 @@ fn execute(&mut self, opcode: u16) {
                         if self.keys[i] {
                                 pressed = true;
                                 self.v_registers[x] = (65 + i) as u8;
+                                break;
                         }
                 }
 
