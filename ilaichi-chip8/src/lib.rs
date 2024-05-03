@@ -284,11 +284,34 @@ fn execute(&mut self, opcode: u16) {
                 self.v_registers[x] = rnd & kk; 
         },
         (0xD,_,_,_) => {
-                //TODO: implement drawing sprites
-                let x_c = self.v_registers[digit2 as usize];
-                let y_c = self.v_registers[digit3 as usize];
+                let x_c = self.v_registers[digit2 as usize] as u16;
+                let y_c = self.v_registers[digit3 as usize] as u16;
+                
+                let rows = digit4;
 
-                let n = digit4 as usize;
+                let mut flipped = false;
+                
+                for y_line in 0..rows {
+                        let addr = self.i_register + y_line as u16;
+                        let pixels = self.ram[addr as usize];
+
+                        for x_line in 0..8 {
+                                if (pixels & (0b1000_0000 >> x_line)) != 0 {
+                                        let x = (x_c + x_line) as usize % SCREEN_WIDTH;
+                                        let y = (y_c + y_line) as usize % SCREEN_HEIGHT;
+                                        
+                                        let i = x + SCREEN_WIDTH * y;
+                                        flipped |= self.screen[i];
+                                        self.screen[i] ^= true;
+                                }
+                        }
+                } 
+                
+                if flipped {
+                        self.v_registers[0xF] = 1;
+                } else {
+                        self.v_registers[0xF] = 0;
+                }
         },
         (0xE,_,9,0xE) => {
                 let x = digit2 as usize;

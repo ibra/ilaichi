@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 ilaichi-chip8 = { path = "../ilaichi-chip8"} 
+sdl2 = "0.36.0"
