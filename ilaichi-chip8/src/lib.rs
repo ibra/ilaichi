@@ -330,6 +330,7 @@ fn execute(&mut self, opcode: u16) {
         (0xE,_,9,0xE) => {
                 let x = digit2 as usize;
                 let v_x = self.v_registers[x];
+
                 let key_pressed = self.keys[v_x as usize];               
 
                 if key_pressed {
@@ -339,6 +340,7 @@ fn execute(&mut self, opcode: u16) {
         (0xE,_,0xA,1) => {
                 let x = digit2 as usize;
                 let v_x = self.v_registers[x];
+
                 let key_pressed = self.keys[v_x as usize];               
 
                 if !key_pressed {
@@ -355,8 +357,8 @@ fn execute(&mut self, opcode: u16) {
 
                 for i in 0..NUM_KEYS {
                         if self.keys[i] {
+                                self.v_registers[x] = i as u8;
                                 pressed = true;
-                                self.v_registers[x] = (65 + i) as u8;
                                 break;
                         }
                 }
