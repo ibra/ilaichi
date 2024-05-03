@@ -314,7 +314,18 @@ fn execute(&mut self, opcode: u16) {
         },
         (0xF,_,0,0xA) => {
                 let x = digit2 as usize;
-                // TODO: implement waiting for keypress
+                let mut pressed = false;
+
+                for i in 0..NUM_KEYS {
+                        if self.keys[i] {
+                                pressed = true;
+                                self.v_registers[x] = (65 + i) as u8;
+                        }
+                }
+
+                if !pressed {
+                        self.pc -= 2;
+                }
         }, 
         (0xF,_,1,5) => {
                 let x = digit2 as usize;
@@ -343,19 +354,20 @@ fn execute(&mut self, opcode: u16) {
         },
         (0xF,_,5,5) => {
                 let x = digit2 as usize;
-                for i in 1..=x {
+                for i in 0..=x {
                        self.ram[i+x] = self.v_registers[i];   
                 }
         },
         (0xF,_,6,5) => {
                 let x = digit2 as usize;
-                for i in 1..=x {
+                for i in 0..=x {
                        self.v_registers[i] = self.ram[i+x];   
                 }
-        }
+        },
 
         (_, _, _, _) => unimplemented!("Unimplemented opcode: {}", opcode),
     }
 }
+
 }
 
