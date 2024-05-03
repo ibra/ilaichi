@@ -202,7 +202,7 @@ fn execute(&mut self, opcode: u16) {
                 let x = digit2 as usize;
                 let kk = (opcode & 0xFF) as u8;
 
-                self.v_registers[x] = self.v_registers[x] + kk;
+                self.v_registers[x] = self.v_registers[x].wrapping_add(kk);
         },
         (8,_,_,0) => {
                 let x = digit2 as usize;

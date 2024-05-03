@@ -29,7 +29,7 @@ fn main() {
     
     let mut chip8 = Emulator::new();
 
-    let mut rom = File::open(&args[1]).expect("Unable to open file");
+    let mut rom = File::open(&args[1]).expect("unable to open file");
     let mut buffer = Vec::new();
 
     rom.read_to_end(&mut buffer).unwrap();
@@ -54,8 +54,19 @@ fn main() {
         for evt in event_pump.poll_iter() {
                 match evt {
                     Event::Quit{..} => {
-                    break 'gameloop;
-                },
+                        break 'gameloop;
+                    },
+                    Event::KeyDown{keycode: Some(key), ..} => { 
+                        if let Some(k) = emulate_keys(key) {
+                            chip8.keypress(k,true);    
+                            println!("keypress {0}",k);
+                        }
+                    },
+                    Event::KeyUp{keycode: Some(key), ..} => { 
+                        if let Some(k) = emulate_keys(key) {
+                            chip8.keypress(k,false);
+                        }   
+                    }
                     _ => ()
                 }
         }
