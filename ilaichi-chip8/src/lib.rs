@@ -392,15 +392,19 @@ fn execute(&mut self, opcode: u16) {
         },
         (0xF,_,5,5) => {
                 let x = digit2 as usize;
-                for i in 0..=x {
-                       self.ram[i+x] = self.v_registers[i];   
+                let i = self.i_register as usize;
+
+                for idx in 0..=x {
+                        self.ram[i + idx] = self.v_registers[idx];
                 }
         },
         (0xF,_,6,5) => {
                 let x = digit2 as usize;
-                for i in 0..=x {
-                       self.v_registers[i] = self.ram[i+x];   
-                }
+                let i = self.i_register as usize;
+
+                for idx in 0..=x {
+                        self.v_registers[idx] = self.ram[i + idx];
+                }                       
         },
 
         (_, _, _, _) => unimplemented!("Unimplemented opcode: {}", opcode),
